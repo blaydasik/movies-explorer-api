@@ -1,32 +1,28 @@
 import { Router } from 'express';
 
-/* // импортируем обработчики запросов для роутов
+// импортируем обработчики запросов для роутов
 import {
-  getCards, deleteCardById, createCard, likeCard, dislikeCard,
-} from '../controllers/cards.js';
+  getMovies, createMovie, deleteMovie,
+} from '../controllers/movies.js';
 
 // импортируем валидаторы
 import {
-  celebrateCardId, celebrateCreateCard,
-} from '../validators/cards.js'; */
+  celebrateCreateMovie, celebrateMovieId,
+} from '../validators/movies.js';
 
 // настроим маршруты для movies
 const moviesRouter = Router();
 
-/* // получим все карточки
-cardsRouter.get('/', getCards);
+// возвращает все сохранённые текущим  пользователем фильмы
+moviesRouter.get('/', getMovies);
 
-// удалим карточку по еe id
-cardsRouter.delete('/:cardId', celebrateCardId, deleteCardById);
+// создаёт фильм с переданными в теле:
+// country, director, duration, year, description,
+// image, trailer, nameRU, nameEN и thumbnail, movieId
+moviesRouter.post('/', celebrateCreateMovie, createMovie);
 
-// создадим карточку
-cardsRouter.post('/', celebrateCreateCard, createCard);
-
-// поставим лайк карточке
-cardsRouter.put('/:cardId/likes', celebrateCardId, likeCard);
-
-// уберем лайк с карточки
-cardsRouter.delete('/:cardId/likes', celebrateCardId, dislikeCard); */
+// удаляет сохранённый фильм по id
+moviesRouter.delete('/:movieId', celebrateMovieId, deleteMovie);
 
 // экспортируем роутер
 export default moviesRouter;
