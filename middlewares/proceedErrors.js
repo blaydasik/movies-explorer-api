@@ -6,7 +6,7 @@ function proceedErrors(err, req, res, next) {
   let { statusCode, message } = err;
   if (!statusCode) {
     statusCode = constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
-    message = 'На сервере произошла необработанная нами ушипка.';
+    message = 'На сервере произошла необработанная нами ушипка :-(';
   }
   // если ошибка сгенерирована не нами
   res.status(statusCode).send({ message });
