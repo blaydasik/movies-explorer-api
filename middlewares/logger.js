@@ -2,7 +2,7 @@
 import winston from 'winston';
 import expressWinston from 'express-winston';
 
-// логгер запросов
+// логгер запросов и ответов
 export const requestLogger = expressWinston.logger({
   transports: [
     new winston.transports.File({ filename: 'logs/request.log' }),
