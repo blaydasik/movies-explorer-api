@@ -36,9 +36,6 @@ app.use(cors({
   credentials: true,
 }));
 
-// подключим миддлвару для rate limiter
-app.use(rateLimiter);
-
 // задействуем нужные методы для парсеров данных
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -53,6 +50,9 @@ mongoose.connect(databaseURL)
 
 // подключаем логгер запросов
 app.use(requestLogger);
+
+// подключим миддлвару для rate limiter
+app.use(rateLimiter);
 
 // подключим helmet
 app.use(helmet());
