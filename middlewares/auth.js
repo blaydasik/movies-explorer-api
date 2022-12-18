@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 // импортируем классы ошибок
 import UnathorizedError from '../errors/UnathorizedError.js';
 import CookieMissingError from '../errors/CookieMissingError.js';
+import { errorMessagesAuth } from '../errors/ErrorMessages.js';
 
 // получим секретный ключ
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -20,7 +21,7 @@ function auth(req, res, next) {
       payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'super_duper_crypto_strong_key');
     } catch (err) {
       // ушипка 401 - токен не прошел верификацию
-      next(new UnathorizedError('Переданный токен не верифицирован :-('));
+      next(new UnathorizedError(errorMessagesAuth.unathorized));
     }
     // записываем пейлоуд в объект запроса
     req.user = payload;
@@ -28,7 +29,7 @@ function auth(req, res, next) {
   } else {
     // ушипка - куки с токеном нет (код 204 дабы избежать ненужных сообщений в консоле)
     // не удалось найти способа проверки наличия куки httpOnly с токеном на фронте из JS
-    next(new CookieMissingError('Отсутствует кука :-('));
+    next(new CookieMissingError(errorMessagesAuth.cookie));
   }
 }
 

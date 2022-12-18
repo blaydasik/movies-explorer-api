@@ -1,23 +1,16 @@
-import dotenv from 'dotenv';
 // импортируем модуль для хэширования
 import bcrypt from 'bcryptjs';
 // импортируем пакет для создания JWT токена
 import jwt from 'jsonwebtoken';
 // импортируем классы ошибок
 import NotFoundError from '../errors/NotFoundError.js';
-import UnathorizedError from '../errors/UnathorizedError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import { errorMessagesUsersController } from '../errors/ErrorMessages.js';
 // импортируем схему пользователя
 import User from '../models/user.js';
-
-// длина модификатора входа хэш-функции
-const saltLength = 10;
-
-// добавим env-переменные из файла в process.env
-dotenv.config();
-// получим секретный ключ
-const { NODE_ENV, JWT_SECRET } = process.env;
+// импортируем конфиг
+import { saltLength, secretKey } from '../utils/config.js';
 
 // поиск и отправка данных пользователя по id
 function findUserById(id, res, next) {
@@ -30,13 +23,13 @@ function findUserById(id, res, next) {
         res.send(userWithoutId);
       } else {
         // если пользователь не нашелся в БД, то ушипка 404
-        throw new NotFoundError(`Пользователь с указанным _id=${id} не найден.`);
+        throw new NotFoundError(errorMessagesUsersController.notFound);
       }
     })
     .catch((err) => {
       // если передан некорректный _id - ушипка 400
       if (err.name === 'CastError') {
-        next(new BadRequestError(`Переданы некорректные данные: _id=${id} при запросе информации о пользователе.`));
+        next(new BadRequestError(errorMessagesUsersController.badRequest));
       } else {
         // 500 - ушипка по умолчанию + HTTP errors
         next(err);
@@ -69,10 +62,10 @@ export function createUser(req, res, next) {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         // ушипка 400 - данные для создания пользователя не прошли валидацию
-        next(new BadRequestError(`Переданы некорректные данные при создании пользователя: ${Object.values(err.errors)[0].message}`));
+        next(new BadRequestError(errorMessagesUsersController.badRequestCreate));
       } else if (err.code === 11000) {
         // указан уже существующий email - ушипка 409
-        next(new ConflictError('Нарушено условие на уникальность поля email :-('));
+        next(new ConflictError(errorMessagesUsersController.conflict));
       } else {
         // 500 - ушипка по умолчанию + HTTP errors
         next(err);
@@ -90,13 +83,13 @@ export function updateProfile(req, res, next) {
         res.send(user);
       } else {
         // если пользователь не нашелся в БД, то ушипка 404
-        throw new NotFoundError(`Пользователь с указанным _id=${req.user._id} не найден.`);
+        throw new NotFoundError(errorMessagesUsersController.notFound);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         // ушипка 400
-        next(new BadRequestError(`Переданы некорректные данные при обновлении пользователя: ${Object.values(err.errors)[0].message}`));
+        next(new BadRequestError(errorMessagesUsersController.badRequestUpdate));
       } else {
         // 500 - ушипка по умолчанию + HTTP errors
         next(err);
@@ -114,7 +107,7 @@ export function login(req, res, next) {
         // пэйлоуд токена
         { _id: user._id },
         // секретный ключ подписи
-        NODE_ENV === 'production' ? JWT_SECRET : 'super_duper_crypto_strong_key',
+        secretKey,
         // объект опций - срок действия токена
         { expiresIn: '7d' },
       );
@@ -133,11 +126,7 @@ export function login(req, res, next) {
 }
 
 // обработчик signout
-export function deleteCredentials(req, res, next) {
+export function deleteCredentials(req, res) {
   res.clearCookie('jwt');
-  res.send({ message: 'Вы успешно деавторизовались. Приходите еще!' })
-    .catch(() => {
-      // 401 - ушипка авторизации
-      next(new UnathorizedError('Не удалось куку грохнуть :-('));
-    });
+  res.send({ message: 'Вы успешно деавторизовались. Приходите еще!' });
 }

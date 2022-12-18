@@ -10,6 +10,7 @@ import auth from '../middlewares/auth.js';
 // импортируем валидаторы celebrate
 import { celebrateLoginUser, celebrateCreateUser } from '../validators/users.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import { errorMessagesRoutes } from '../errors/ErrorMessages.js';
 
 const router = express();
 
@@ -28,7 +29,7 @@ router.post('/signout', deleteCredentials);
 // для любых других роутов
 router.all('*', (req, res, next) => {
   // 404 - был запрошен несушествующий роут
-  next(new NotFoundError('Маршрута не найдена, насяльника.'));
+  next(new NotFoundError(errorMessagesRoutes.notFound));
 });
 
 export default router;

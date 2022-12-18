@@ -3,7 +3,7 @@
 
  **Ссылка на проект**
 
-[Movies-explorer]()
+[Movies-explorer](https://diplomabyblaydasik.nomoredomains.club)
 
 ## Обзор
 
@@ -64,5 +64,5 @@
 9. Bearer token.
 
 IP 84.201.154.67  
-Frontend https://mestobyblaydasik.nomoredomains.club  
-Backend https://api.mestobyblaydasik.nomoredomains.club  
+Frontend https://diplomabyblaydasik.nomoredomains.club 
+Backend https://api.diplomabyblaydasik.nomoredomains.club  

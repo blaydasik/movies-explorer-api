@@ -8,23 +8,20 @@ import cors from 'cors';
 // импортируем парсеры данных
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+// импортируем helmet для установки заголовков
+import helmet from 'helmet';
 // импортируем мидлвэр для обработки ошибок celebrate
 import { errors } from 'celebrate';
 // импортируем роутер
 import router from './routes/index.js';
 // импортируем миддлвару централизованнйо обработки ошибок
 import proceedErrors from './middlewares/proceedErrors.js';
-
+// импортируем миддлвару rate limiter
+import rateLimiter from './middlewares/rateLimiter.js';
 // импортируем логгеры
 import { requestLogger, errorLogger } from './middlewares/logger.js';
-
-// установим порт для запуска сервера, получим секретный ключ
-const { PORT = 3000 } = process.env;
-// список разрешенных адресов
-const corseAllowedOrigins = [
-  'http://mestobyblaydasik.nomoredomains.club',
-  'https://mestobyblaydasik.nomoredomains.club',
-];
+// импортируем конфиг
+import { databaseURL, serverPort, corseAllowedOrigins } from './utils/config.js';
 
 process.on('unhandledRejection', (err) => {
   console.log(`Unexpected error: ${err}`);
@@ -39,6 +36,9 @@ app.use(cors({
   credentials: true,
 }));
 
+// подключим миддлвару для rate limiter
+app.use(rateLimiter);
+
 // задействуем нужные методы для парсеров данных
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -46,13 +46,16 @@ app.use(cookieParser());
 // включим валидацию для обновления документов
 mongoose.set({ runValidators: true });
 // подключимся к серверу MongoDB
-mongoose.connect('mongodb://localhost:27017/moviesdb')
+mongoose.connect(databaseURL)
   .catch((err) => {
     console.log(`Connection to DB moviesdb has failed with error: ${err}`);
   });
 
 // подключаем логгер запросов
 app.use(requestLogger);
+
+// подключим helmet
+app.use(helmet());
 
 // подключим роуты
 app.use(router);
@@ -67,7 +70,7 @@ app.use(errors());
 app.use(proceedErrors);
 
 // запустим сервер на выбранном порту
-app.listen(PORT, () => {
+app.listen(serverPort, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`);
+  console.log(`App listening on port ${serverPort}`);
 });

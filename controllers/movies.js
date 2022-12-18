@@ -2,6 +2,7 @@
 import NotFoundError from '../errors/NotFoundError.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import { errorMessagesMoviesController } from '../errors/ErrorMessages.js';
 // импортируем схему карточки
 import Movie from '../models/movie.js';
 
@@ -20,11 +21,11 @@ export function deleteMovie(req, res, next) {
       // проверим, нашёлся ли фильм в базе
       if (!movie) {
         // если фильм не нашелся в БД, то ушипка 404
-        throw new NotFoundError('Указанная фильм в базе не найден :-(');
+        throw new NotFoundError(errorMessagesMoviesController.notFound);
         // проверим принадлежность сохраненного фильма текущему пользователю
       } else if (movie.owner.toString() !== req.user._id) {
         // если фильм не принадлежит пользователю, то ушипка 403
-        throw new ForbiddenError('Зафиксирована попытка удаления чужого фильма :-(');
+        throw new ForbiddenError(errorMessagesMoviesController.forbidden);
       } else {
         Movie.findByIdAndRemove(req.params.movieId)
           .then((result) => {
@@ -36,7 +37,7 @@ export function deleteMovie(req, res, next) {
     .catch((err) => {
       if (err.name === 'CastError') {
         // ушипка 400
-        next(new BadRequestError('Переданы некорректные данные для удаления фильма :-('));
+        next(new BadRequestError(errorMessagesMoviesController.badRequest));
       } else {
         next(err);
       }
@@ -69,7 +70,7 @@ export function createMovie(req, res, next) {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         // ушипка 400
-        next(new BadRequestError(`Переданы некорректные данные при сохранении фильма: ${Object.values(err.errors)[0].message}`));
+        next(new BadRequestError(errorMessagesMoviesController.badRequestSave));
       } else {
         // 500 - ушипка по умолчанию
         next(err);
