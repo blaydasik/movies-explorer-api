@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 
 // установим порт для запуска сервера
-export const serverPort = process.env.PORT || 3000;
+export const serverPort = process.env.PORT || 3001;
 
 // длина модификатора входа хэш-функции
 export const saltLength = 10;
