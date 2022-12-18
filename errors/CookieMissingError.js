@@ -6,8 +6,7 @@ class CookieMissingError extends HTTPError {
   constructor(message) {
     super(message);
     this.name = 'CookieMissingError';
-    this.statusCode = constants.HTTP_STATUS_NO_CONTENT;
-  }
+    this.statusCode = constants.HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION;
 }
 
 export default CookieMissingError;
