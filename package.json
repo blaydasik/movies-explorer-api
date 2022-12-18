@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/blaydasik/movies-explorer-api.git/issues"
   },
-  "homepage": "",
+  "homepage": "https://api.diplomabyblaydasik.nomoredomains.club",
   "devDependencies": {
     "eslint": "^8.26.0",
     "eslint-config-airbnb-base": "^15.0.0",
