@@ -18,7 +18,7 @@ moviesRouter.get('/', getMovies);
 
 // создаёт фильм с переданными в теле:
 // country, director, duration, year, description,
-// image, trailer, nameRU, nameEN и thumbnail, movieId
+// image, trailerLink, nameRU, nameEN, thumbnail, movieId
 moviesRouter.post('/', celebrateCreateMovie, createMovie);
 
 // удаляет сохранённый фильм по id

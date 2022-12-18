@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
     // хэш пароля
     password: {
       type: String,
+      minlength: [6, 'поле пароль `{VALUE}` содержит менее 6 символов.'],
       required: [true, 'поле пароль не заполнено.'],
       select: false,
     },

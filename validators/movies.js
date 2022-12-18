@@ -11,16 +11,16 @@ export const celebrateMovieId = celebrate({
 // валидатор полей при создании карточки
 export const celebrateCreateMovie = celebrate({
   body: Joi.object().keys({
-    country: Joi.string.required,
-    director: Joi.string.required,
+    country: Joi.string().required(),
+    director: Joi.string().required(),
     duration: Joi.number().required(),
     year: Joi.string().min(4).max(4).required(),
-    description: Joi.string.required,
+    description: Joi.string().required(),
     image: Joi.string().regex(urlRegex).uri({ scheme: ['http', 'https'] }).required(),
     trailerLink: Joi.string().regex(urlRegex).uri({ scheme: ['http', 'https'] }).required(),
     thumbnail: Joi.string().regex(urlRegex).uri({ scheme: ['http', 'https'] }).required(),
     movieId: Joi.number().required(),
-    nameRU: Joi.string.required,
-    nameEN: Joi.string.required,
+    nameRU: Joi.string().required(),
+    nameEN: Joi.string().required(),
   }),
 });
