@@ -19,4 +19,5 @@ export const databaseURL = NODE_ENV === 'production' ? DB_URL : 'mongodb://local
 export const corseAllowedOrigins = [
   'http://diplomabyblaydasik.nomoredomains.club',
   'https://diplomabyblaydasik.nomoredomains.club',
+  'http://localhost:3000'
 ];

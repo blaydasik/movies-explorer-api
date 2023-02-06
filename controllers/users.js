@@ -18,9 +18,7 @@ function findUserById(id, res, next) {
     .then((user) => {
       // проверим, есть ли user в БД
       if (user) {
-        const userWithoutId = user.toObject();
-        delete userWithoutId._id;
-        res.send(userWithoutId);
+        res.send(user);
       } else {
         // если пользователь не нашелся в БД, то ушипка 404
         throw new NotFoundError(errorMessagesUsersController.notFound);
@@ -125,8 +123,13 @@ export function login(req, res, next) {
     .catch(next);
 }
 
-// обработчик signout
-export function deleteCredentials(req, res) {
+// обработчик logout
+export function deleteCredentials(req, res, next) {
   res.clearCookie('jwt');
-  res.send({ message: 'Вы успешно деавторизовались. Приходите еще!' });
+  res.send({ message: 'Вы успешно деавторизовались. Приходите еще!' })
+    .catch(() => {
+    // 401 - ушипка авторизации
+      next(new UnathorizedError('Не удалось куку грохнуть :-('));
+    });
 }
+
