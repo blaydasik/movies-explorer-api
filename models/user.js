@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
-import validator from 'validator';
 // импортируем модуль для хэширования
 import bcrypt from 'bcryptjs';
 // импортируем классы ошибок
 import UnathorizedError from '../errors/UnathorizedError.js';
+// импортируем регулярное выражение 
+import { emailRegex } from '../utils/constants.js'
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       validate: {
-        validator: validator.isEmail,
+        validator: (email) => emailRegex.test(email),
         message: 'поле email `{VALUE}` не прошло валидацию.',
       },
       required: [true, 'поле email не заполнено.'],

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 // импортируем регулярку
-import urlRegex from '../utils/constants.js';
+import { urlRegex } from '../utils/constants.js';
 
 const movieSchema = new mongoose.Schema(
   {
