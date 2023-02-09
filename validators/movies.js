@@ -1,5 +1,5 @@
 import { celebrate, Joi } from 'celebrate';
-import urlRegex from '../utils/constants.js';
+import { urlRegex } from '../utils/constants.js';
 
 // валидатор id фильма при удалении
 export const celebrateMovieId = celebrate({

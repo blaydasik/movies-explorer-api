@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import NotFoundError from '../errors/NotFoundError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import UnathorizedError from '../errors/UnathorizedError.js';
 import { errorMessagesUsersController } from '../errors/ErrorMessages.js';
 // импортируем схему пользователя
 import User from '../models/user.js';
@@ -18,9 +19,7 @@ function findUserById(id, res, next) {
     .then((user) => {
       // проверим, есть ли user в БД
       if (user) {
-        const userWithoutId = user.toObject();
-        delete userWithoutId._id;
-        res.send(userWithoutId);
+        res.send(user);
       } else {
         // если пользователь не нашелся в БД, то ушипка 404
         throw new NotFoundError(errorMessagesUsersController.notFound);
@@ -90,6 +89,9 @@ export function updateProfile(req, res, next) {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         // ушипка 400
         next(new BadRequestError(errorMessagesUsersController.badRequestUpdate));
+      } else if (err.code === 11000) {
+        // указан уже существующий email - ушипка 409
+        next(new ConflictError(errorMessagesUsersController.conflict));
       } else {
         // 500 - ушипка по умолчанию + HTTP errors
         next(err);
@@ -125,8 +127,12 @@ export function login(req, res, next) {
     .catch(next);
 }
 
-// обработчик signout
-export function deleteCredentials(req, res) {
+// обработчик logout
+export function deleteCredentials(req, res, next) {
   res.clearCookie('jwt');
-  res.send({ message: 'Вы успешно деавторизовались. Приходите еще!' });
+  res.send({ message: 'Вы успешно деавторизовались. Приходите еще!' })
+    .catch(() => {
+    // 401 - ушипка авторизации
+      next(new UnathorizedError('Не удалось куку грохнуть :-('));
+    });
 }

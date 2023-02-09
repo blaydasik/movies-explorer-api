@@ -41,7 +41,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // включим валидацию для обновления документов
-mongoose.set({ runValidators: true });
+mongoose.set({ runValidators: true, autoIndex: true });
 // подключимся к серверу MongoDB
 mongoose.connect(databaseURL)
   .catch((err) => {

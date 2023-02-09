@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
-import validator from 'validator';
 // импортируем модуль для хэширования
 import bcrypt from 'bcryptjs';
 // импортируем классы ошибок
 import UnathorizedError from '../errors/UnathorizedError.js';
+// импортируем регулярное выражение
+import { emailRegex } from '../utils/constants.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       validate: {
-        validator: validator.isEmail,
+        validator: (email) => emailRegex.test(email),
         message: 'поле email `{VALUE}` не прошло валидацию.',
       },
       required: [true, 'поле email не заполнено.'],
@@ -37,22 +38,27 @@ const userSchema = new mongoose.Schema(
 );
 
 // метод схемы для поиска пользователя по логину и паролю
-userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
-  return this.findOne({ email }).select('+password')
+userSchema.statics.findUserByCredentials = function findUserByCredentials(
+  email,
+  password,
+) {
+  return this.findOne({ email })
+    .select('+password')
     .then((user) => {
       // проверим, найден ли пользователь
       if (user) {
         // вернем результат проверки корректности пароля
-        return bcrypt.compare(password, user.password)
-          .then((checked) => {
-            // если пароль корректный
-            if (checked) {
-              const userWithoutPassword = user.toObject();
-              delete userWithoutPassword.password;
-              return userWithoutPassword;
-            } // если хэши не совпали отклоняем промис с ошибкой
-            throw new UnathorizedError('Указаны некорректные почта или пароль :-(');
-          });
+        return bcrypt.compare(password, user.password).then((checked) => {
+          // если пароль корректный
+          if (checked) {
+            const userWithoutPassword = user.toObject();
+            delete userWithoutPassword.password;
+            return userWithoutPassword;
+          } // если хэши не совпали отклоняем промис с ошибкой
+          throw new UnathorizedError(
+            'Указаны некорректные почта или пароль :-(',
+          );
+        });
       } // иначе отклоняем промис с ошибкой
       throw new UnathorizedError('Указаны некорректные почта или пароль :-(');
     });
