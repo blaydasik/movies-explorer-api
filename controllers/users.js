@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import NotFoundError from '../errors/NotFoundError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import UnathorizedError from '../errors/UnathorizedError.js';
 import { errorMessagesUsersController } from '../errors/ErrorMessages.js';
 // импортируем схему пользователя
 import User from '../models/user.js';
@@ -88,6 +89,9 @@ export function updateProfile(req, res, next) {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         // ушипка 400
         next(new BadRequestError(errorMessagesUsersController.badRequestUpdate));
+      } else if (err.code === 11000) {
+        // указан уже существующий email - ушипка 409
+        next(new ConflictError(errorMessagesUsersController.conflict));
       } else {
         // 500 - ушипка по умолчанию + HTTP errors
         next(err);
@@ -132,4 +136,3 @@ export function deleteCredentials(req, res, next) {
       next(new UnathorizedError('Не удалось куку грохнуть :-('));
     });
 }
-
